@@ -469,6 +469,15 @@ decrypt_fs()
 			then
 				"${ZFS}" load-key "${ENCRYPTIONROOT}"
 
+			# Obtain with mandos, if active
+			elif [ -e /usr/lib/mandos/plugin-runner ]
+			then
+				echo "/usr/lib/mandos/plugin-runner" > /run/zfs_console_askpwd_cmd
+				for _ in 1 2 3; do
+					/usr/lib/mandos/plugin-runner | \
+						$ZFS load-key "${ENCRYPTIONROOT}" && break
+				done
+
 			# Prompt with plymouth, if active
 			elif /bin/plymouth --ping 2>/dev/null
 			then
